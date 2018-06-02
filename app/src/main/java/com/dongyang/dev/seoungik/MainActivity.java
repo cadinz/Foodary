@@ -9,7 +9,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toast.makeText(this, "수정된 결과", Toast.LENGTH_SHORT).show( );
+        Toast.makeText(this, "두번 수정한 결과", Toast.LENGTH_SHORT).show( );
         setContentView(R.layout.activity_main);
     }
 }
