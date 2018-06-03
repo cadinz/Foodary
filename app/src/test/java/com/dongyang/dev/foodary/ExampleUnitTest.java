@@ -1,4 +1,4 @@
-package com.dongyang.dev.seoungik;
+package com.dongyang.dev.foodary;
 
 import org.junit.Test;
 

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">seoungik</string>
+    <string name="app_name">foodary</string>
+    <string name="title_activity_login">LoginActivity</string>
 </resources>

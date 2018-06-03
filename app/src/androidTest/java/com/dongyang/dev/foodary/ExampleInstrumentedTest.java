@@ -1,4 +1,4 @@
-package com.dongyang.dev.seoungik;
+package com.dongyang.dev.foodary;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.dongyang.dev.seoungik", appContext.getPackageName());
+        assertEquals("com.dongyang.dev.foodary", appContext.getPackageName());
     }
 }
