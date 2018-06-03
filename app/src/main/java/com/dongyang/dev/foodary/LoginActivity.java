@@ -1,5 +1,6 @@
 package com.dongyang.dev.foodary;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -20,8 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView input_email;
     private TextView input_password;
     private Button btn_login;
-    private Button btn_signin;
-
+    private TextView et_signin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +34,18 @@ public class LoginActivity extends AppCompatActivity {
         input_password = findViewById(R.id.input_password);
 
         btn_login = findViewById(R.id.btn_login);
-        btn_signin = findViewById(R.id.btn_signin);
-
+        et_signin = findViewById(R.id.et_signin);
 
         btn_login.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick(View view) {
-                mAuth.signInWithEmailAndPassword(input_email.getText( ) + "", input_password.getText( ) + "").addOnCompleteListener(new OnCompleteListener<AuthResult>( ) {
+                mAuth.signInWithEmailAndPassword(input_email.getText( )+"", input_password.getText( )+"").addOnCompleteListener(new OnCompleteListener<AuthResult>( ) {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show( );
+                            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         } else{
                             Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show( );
                         }
@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        btn_signin.setOnClickListener(new View.OnClickListener( ) {
+        et_signin.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick(View view) {
                 mAuth.createUserWithEmailAndPassword(input_email.getText( ) + "", input_password.getText( ) + "").addOnCompleteListener(new OnCompleteListener<AuthResult>( ) {
