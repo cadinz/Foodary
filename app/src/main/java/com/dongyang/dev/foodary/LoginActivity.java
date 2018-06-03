@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Toast.makeText(this, "두번 수정한 결과", Toast.LENGTH_SHORT).show( );
+        Toast.makeText(this, "세번 수정한 결과", Toast.LENGTH_SHORT).show( );
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance( );
