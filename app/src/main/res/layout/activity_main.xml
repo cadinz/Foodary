@@ -1,95 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF"
-    android:gravity="center_horizontal"
-    tools:context="com.dongyang.dev.foodary.MainActivity">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="16dp"
+    >
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/bt_menu"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:text="menu"
-            tools:background="@color/colorPrimary"/>
 
-        <ImageButton
-            android:id="@+id/img_logo"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            app:srcCompat="@mipmap/ic_launcher_round" />
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="3"
-            android:ems="10"
-            android:hint="음식점.."
-            android:inputType="textPersonName" />
-
-        <Button
-            android:id="@+id/bt_search"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:text="검색"
-            tools:background="@color/colorPrimary"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"/>
 
-        <Button
-            android:id="@+id/bt_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="홈"
-            tools:background="@color/colorPrimary"/>
 
-        <Button
-            android:id="@+id/bt_map"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="지도맵"
-            tools:background="@color/colorPrimary"/>
 
-        <Button
-            android:id="@+id/bt_mine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="내가쓴일기"
-            tools:background="@color/colorPrimary"/>
-
-        <Button
-            android:id="@+id/bt_like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="즐겨찾기"
-            tools:background="@color/colorPrimary"
-            />
-
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/listview1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </LinearLayout>
