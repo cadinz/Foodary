@@ -3,12 +3,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp">
+
     <ImageButton
+        android:id="@+id/imgBtnMenu"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:background="@drawable/btn_menu"/>
+        android:background="@drawable/btn_menu" />
 
     <EditText
         android:id="@+id/et_search"
@@ -17,10 +19,12 @@
         android:layout_centerInParent="true" />
 
     <ImageButton
+        android:id="@+id/imgBtnWrite"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:background="@drawable/btn_plus"/>
+        android:background="@drawable/btn_plus" />
+
 </RelativeLayout>

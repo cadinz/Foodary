@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">foodary</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_find_password">FindPassword</string>
+    <string name="title_activity_signin">SigninActivity</string>
 </resources>
