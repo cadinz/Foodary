@@ -2,6 +2,7 @@ package com.dongyang.dev.foodary;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -79,7 +80,9 @@ public class MyActivity extends AppCompatActivity {
         imgBtnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MyActivity.this, "글쓰기클릭", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(),WriteActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 
