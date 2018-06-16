@@ -31,10 +31,6 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-
-
-
         mAuth = FirebaseAuth.getInstance( );
         input_email = findViewById(R.id.input_email);
         input_password = findViewById(R.id.input_password);

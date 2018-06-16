@@ -12,11 +12,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
@@ -27,6 +36,9 @@ public class MyActivity extends AppCompatActivity {
     private ImageButton imgBtnMenu;
     private ImageButton imgBtnWrite;
 
+    private List<ImageDTO> imageDTOs = new ArrayList<>();
+    private List<String> uidLists = new ArrayList<>();
+    private FirebaseDatabase database;
 
 
     @Override
@@ -34,6 +46,7 @@ public class MyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        database = FirebaseDatabase.getInstance();
 
         //액션바
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -53,29 +66,25 @@ public class MyActivity extends AppCompatActivity {
         actionBar.setCustomView(actionbar);
         //액션바끝
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView = findViewById(R.id.my_recycler_view);
 
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final BoardRecyclerViewAdapter boardRecyclerViewAdapter = new BoardRecyclerViewAdapter();
+        mRecyclerView.setAdapter(boardRecyclerViewAdapter);
 
-        myDataset = new ArrayList<>( );
-        mAdapter = new MyAdapter(myDataset);
-        mRecyclerView.setAdapter(mAdapter);
+        //mRecyclerView.setHasFixedSize(true);
+
+        //mLayoutManager = new LinearLayoutManager(this);
+        //mRecyclerView.setLayoutManager(mLayoutManager);
+
+        //myDataset = new ArrayList<>( );
+        //mAdapter = new MyAdapter(myDataset);
+        //mRecyclerView.setAdapter(mAdapter);
 
 
-        imgBtnMenu = findViewById(R.id.imgBtnMenu);
+        //imgBtnMenu = findViewById(R.id.imgBtnMenu);
         imgBtnWrite = findViewById(R.id.imgBtnWrite);
-
-        imgBtnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDataset.add(new MyData("#InsideOut","이거슨 내용입니다", R.drawable.img1));
-                mAdapter.notifyDataSetChanged();
-                Toast.makeText(MyActivity.this, "메뉴클릭", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         imgBtnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +95,63 @@ public class MyActivity extends AppCompatActivity {
             }
         });
 
+        database.getReference().child("images").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
+
+                imageDTOs.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    ImageDTO imageDTO= snapshot.getValue(ImageDTO.class);
+                    imageDTOs.add(imageDTO);
+
+                }
+                boardRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    class BoardRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_view,parent,false);
+
+            return new CustomViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ((CustomViewHolder)holder).item_tvid.setText(imageDTOs.get(position).title);
+            ((CustomViewHolder)holder).item_tvtitle.setText(imageDTOs.get(position).content);
+
+            Glide.with(holder.itemView.getContext()).load(imageDTOs.get(position).imageUrl).into(((CustomViewHolder) holder).item_imageView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return imageDTOs.size();
+        }
+
+        private class CustomViewHolder extends RecyclerView.ViewHolder {
+            ImageView item_imageView;
+            TextView item_tvid;
+            TextView item_tvtitle;
+
+
+            public CustomViewHolder(View view) {
+                super(view);
+                item_imageView = view.findViewById(R.id.item_imageview);
+                item_tvid = view.findViewById(R.id.item_id);
+                item_tvtitle = view.findViewById(R.id.item_title);
+            }
+        }
     }
 
     @Override
