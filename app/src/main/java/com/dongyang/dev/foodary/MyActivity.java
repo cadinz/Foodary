@@ -1,7 +1,6 @@
 package com.dongyang.dev.foodary;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -21,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +45,11 @@ public class MyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        final ArrayList<String> frnd = new ArrayList<String>();
+        frnd.add("cadinz@daum.net");
+        frnd.add("song0703@naver.com");
 
         database = FirebaseDatabase.getInstance();
 
@@ -99,31 +102,29 @@ public class MyActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(final CharSequence charSequence, int i, int i1, int i2) {
-                database.getReference().child("images").orderByChild("userId").equalTo(auth.getCurrentUser().getEmail()).addValueEventListener(new ValueEventListener() {
+                database.getReference().child("images").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
 
                         imageDTOs.clear();
 
                         if(TextUtils.isEmpty(charSequence.toString())){
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                                Log.i("child title", "onDataChange: "+snapshot.child("title"));
-                                Log.i("child Charsequence", "onDataChange: "+charSequence.toString());
-                                    ImageDTO imageDTO= snapshot.getValue(ImageDTO.class);
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                if (frnd.contains(snapshot.child("userId").getValue( ).toString( ))) {
+                                    ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
                                     imageDTOs.add(imageDTO);
                                 }
+                            }
                             }else {
 
-
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
-                            Log.i("child title", "onDataChange: " + snapshot.child("title"));
-                            Log.i("child Charsequence", "onDataChange: " + charSequence.toString( ));
-                            if ((snapshot.child("title").getValue()+"").contains(charSequence.toString())) {
-                                ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
-                                imageDTOs.add(imageDTO);
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                if (frnd.contains(snapshot.child("userId").getValue( ).toString( ))) {
+                                    if ((snapshot.child("title").getValue()+"").contains(charSequence.toString())) {
+                                        ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
+                                        imageDTOs.add(imageDTO);
+                                    }
+                                }
                             }
-
-                        }
                     }
                         boardRecyclerViewAdapter.notifyDataSetChanged();
                     }
@@ -152,14 +153,17 @@ public class MyActivity extends AppCompatActivity {
                 finish();
             }
         });
-        database.getReference().child("images").orderByChild("userId").equalTo(auth.getCurrentUser().getEmail()).addValueEventListener(new ValueEventListener() {
+        database.getReference().child("images").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
 
                 imageDTOs.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    ImageDTO imageDTO= snapshot.getValue(ImageDTO.class);
-                    imageDTOs.add(imageDTO);
+                    Log.i("이메일", "onDataChange: "+snapshot.child("userId").getValue());
+                    if(frnd.contains(snapshot.child("userId").getValue().toString())) {
+                        ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
+                        imageDTOs.add(imageDTO);
+                    }
 
                 }
                 boardRecyclerViewAdapter.notifyDataSetChanged();
