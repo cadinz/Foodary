@@ -9,10 +9,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,15 +35,11 @@ import java.util.List;
 
 public class MyActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseAuth auth;
 
-    private ImageButton imgBtnMenu;
     private ImageButton imgBtnWrite;
-
+    private EditText et_search;
     private List<ImageDTO> imageDTOs = new ArrayList<>();
-    private List<String> uidLists = new ArrayList<>();
     private FirebaseDatabase database;
 
 
@@ -87,6 +88,61 @@ public class MyActivity extends AppCompatActivity {
 
         //imgBtnMenu = findViewById(R.id.imgBtnMenu);
         imgBtnWrite = findViewById(R.id.imgBtnWrite);
+        et_search = findViewById(R.id.et_search);
+
+
+        et_search.addTextChangedListener(new TextWatcher( ) {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence charSequence, int i, int i1, int i2) {
+                database.getReference().child("images").orderByChild("userId").equalTo(auth.getCurrentUser().getEmail()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
+
+                        imageDTOs.clear();
+
+                        if(TextUtils.isEmpty(charSequence.toString())){
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                                Log.i("child title", "onDataChange: "+snapshot.child("title"));
+                                Log.i("child Charsequence", "onDataChange: "+charSequence.toString());
+                                    ImageDTO imageDTO= snapshot.getValue(ImageDTO.class);
+                                    imageDTOs.add(imageDTO);
+                                }
+                            }else {
+
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
+                            Log.i("child title", "onDataChange: " + snapshot.child("title"));
+                            Log.i("child Charsequence", "onDataChange: " + charSequence.toString( ));
+                            if ((snapshot.child("title").getValue()+"").contains(charSequence.toString())) {
+                                ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
+                                imageDTOs.add(imageDTO);
+                            }
+
+                        }
+                    }
+                        boardRecyclerViewAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
 
         imgBtnWrite.setOnClickListener(new View.OnClickListener() {
             @Override
