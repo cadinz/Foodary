@@ -63,6 +63,11 @@ public class SigninActivity extends Activity {
                             dto.name = input_name.getText().toString();
                             dto.email = mAuth.getCurrentUser().getEmail();
                             database.getReference().child("name").push().setValue(dto);
+                            FriendDTO friendDTO = new FriendDTO( );
+                            friendDTO.friend = mAuth.getCurrentUser().getEmail();
+                            friendDTO.email = mAuth.getCurrentUser().getEmail();
+                            database.getReference().child("friends").push().setValue(friendDTO);
+
 
                             new AlertDialog
                                     .Builder(SigninActivity.this)

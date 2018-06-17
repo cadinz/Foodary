@@ -29,16 +29,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MyActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private FirebaseAuth auth;
-
     private ImageButton imgBtnWrite;
+    private ImageButton imgBtnMenu;
     private EditText et_search;
-    private List<ImageDTO> imageDTOs = new ArrayList<>();
+    private List<ImageDTO> imageDTOs = new ArrayList<>( );
     private FirebaseDatabase database;
+    private FirebaseDatabase database2;
+    private List<String> frnd = new ArrayList<>( );
+    private BoardRecyclerViewAdapter boardRecyclerViewAdapter = null;
 
 
     @Override
@@ -46,15 +50,8 @@ public class MyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        final ArrayList<String> frnd = new ArrayList<String>();
-        frnd.add("cadinz@daum.net");
-        frnd.add("song0703@naver.com");
-
-        database = FirebaseDatabase.getInstance();
-
         //액션바
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar( );
 
         // Custom Actionbar를 사용하기 위해 CustomEnabled을 true 시키고 필요 없는 것은 false 시킨다
         actionBar.setDisplayShowCustomEnabled(true);
@@ -62,38 +59,53 @@ public class MyActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);        //액션바에 표시되는 제목의 표시유무를 설정합니다.`
         actionBar.setDisplayShowHomeEnabled(false);            //홈 아이콘을 숨김처리합니다.
 
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(255,255,255,255)));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(255, 255, 255, 255)));
 
         //layout을 가지고 와서 actionbar에 포팅을 시킵니다.
-        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View actionbar = inflater.inflate(R.layout.layout_actionbar, null);
 
         actionBar.setCustomView(actionbar);
         //액션바끝
+        database = FirebaseDatabase.getInstance( );
+        database2 = FirebaseDatabase.getInstance( );
+        auth = FirebaseAuth.getInstance( );
 
-        auth = FirebaseAuth.getInstance();
-
+        imgBtnMenu = findViewById(R.id.imgBtnMenu);
         mRecyclerView = findViewById(R.id.my_recycler_view);
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final BoardRecyclerViewAdapter boardRecyclerViewAdapter = new BoardRecyclerViewAdapter();
+        boardRecyclerViewAdapter = new BoardRecyclerViewAdapter( );
         mRecyclerView.setAdapter(boardRecyclerViewAdapter);
-
-        //mRecyclerView.setHasFixedSize(true);
-
-        //mLayoutManager = new LinearLayoutManager(this);
-        //mRecyclerView.setLayoutManager(mLayoutManager);
-
-        //myDataset = new ArrayList<>( );
-        //mAdapter = new MyAdapter(myDataset);
-        //mRecyclerView.setAdapter(mAdapter);
+        boardRecyclerViewAdapter.notifyDataSetChanged( );
 
 
-        //imgBtnMenu = findViewById(R.id.imgBtnMenu);
+
         imgBtnWrite = findViewById(R.id.imgBtnWrite);
         et_search = findViewById(R.id.et_search);
+        getDefaultData();
 
 
+        imgBtnMenu.setOnClickListener(new View.OnClickListener( ) {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext( ), FindFriend.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        imgBtnWrite.setOnClickListener(new View.OnClickListener( ) {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), WriteActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+
+        getData();
+        getDefaultData();
         et_search.addTextChangedListener(new TextWatcher( ) {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -102,31 +114,34 @@ public class MyActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(final CharSequence charSequence, int i, int i1, int i2) {
-                database.getReference().child("images").addValueEventListener(new ValueEventListener() {
+                database.getReference( ).child("images").addValueEventListener(new ValueEventListener( ) {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
 
-                        imageDTOs.clear();
+                        imageDTOs.clear( );
 
-                        if(TextUtils.isEmpty(charSequence.toString())){
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        if (TextUtils.isEmpty(charSequence.toString( ))) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
                                 if (frnd.contains(snapshot.child("userId").getValue( ).toString( ))) {
+                                    Log.d("태그", "onDataChange: 엠티일때");
                                     ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
                                     imageDTOs.add(imageDTO);
                                 }
                             }
-                            }else {
+                        } else {
 
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
+                                Log.d("태그", "onDataChange: 움직일때");
+
                                 if (frnd.contains(snapshot.child("userId").getValue( ).toString( ))) {
-                                    if ((snapshot.child("title").getValue()+"").contains(charSequence.toString())) {
+                                    if ((snapshot.child("title").getValue( ) + "").contains(charSequence.toString( ))) {
                                         ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
                                         imageDTOs.add(imageDTO);
                                     }
                                 }
                             }
-                    }
-                        boardRecyclerViewAdapter.notifyDataSetChanged();
+                        }
+                        boardRecyclerViewAdapter.notifyDataSetChanged( );
                     }
 
                     @Override
@@ -145,59 +160,83 @@ public class MyActivity extends AppCompatActivity {
         });
 
 
-        imgBtnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),WriteActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-        database.getReference().child("images").addValueEventListener(new ValueEventListener() {
+    }
+
+    void getDefaultData() {
+        database2.getReference( ).child("images").addValueEventListener(new ValueEventListener( ) {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
 
-                imageDTOs.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.i("이메일", "onDataChange: "+snapshot.child("userId").getValue());
-                    if(frnd.contains(snapshot.child("userId").getValue().toString())) {
+                imageDTOs.clear( );
+
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
+                    Log.d("태그", "onDataChange: 내부");
+                    if (frnd.contains(snapshot.child("userId").getValue( ).toString( ))) {
                         ImageDTO imageDTO = snapshot.getValue(ImageDTO.class);
                         imageDTOs.add(imageDTO);
+
+                    }
+                }
+                boardRecyclerViewAdapter.notifyDataSetChanged( );
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    void getData() {
+        database.getReference( ).child("friends").orderByChild("friend").addValueEventListener(new ValueEventListener( ) {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                frnd.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren( )) {
+
+                    Log.i("child : email", snapshot.child("email").getValue( ).toString( ));
+                    Log.i("child : friend", snapshot.child("friend").getValue( ).toString( ));
+                    if (snapshot.child("email").getValue( ).equals(auth.getCurrentUser( ).getEmail( ))) {
+                        frnd.add(snapshot.child("friend").getValue( ).toString( ));
+                        Log.i("추가된것", snapshot.child("friend").getValue( ).toString( ));
+                        System.out.println("안녕");
                     }
 
+
                 }
-                boardRecyclerViewAdapter.notifyDataSetChanged();
+
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
 
+        });
     }
 
-    class BoardRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    class BoardRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_view,parent,false);
+            View view = LayoutInflater.from(parent.getContext( )).inflate(R.layout.my_view, parent, false);
 
             return new CustomViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((CustomViewHolder)holder).item_tvid.setText(imageDTOs.get(position).title);
-            ((CustomViewHolder)holder).item_tvtitle.setText(imageDTOs.get(position).content);
+            ((CustomViewHolder) holder).item_tvid.setText(imageDTOs.get(position).title);
+            ((CustomViewHolder) holder).item_tvtitle.setText(imageDTOs.get(position).content);
 
-            Glide.with(holder.itemView.getContext()).load(imageDTOs.get(position).imageUrl).into(((CustomViewHolder) holder).item_imageView);
+            Glide.with(holder.itemView.getContext( )).load(imageDTOs.get(position).imageUrl).into(((CustomViewHolder) holder).item_imageView);
         }
 
         @Override
         public int getItemCount() {
-            return imageDTOs.size();
+            return imageDTOs.size( );
         }
 
         private class CustomViewHolder extends RecyclerView.ViewHolder {

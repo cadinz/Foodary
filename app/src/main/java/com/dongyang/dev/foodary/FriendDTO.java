@@ -1,6 +1,6 @@
 package com.dongyang.dev.foodary;
 
-public class NameDTO {
-    public String name;
+public class FriendDTO {
+    public String friend;
     public String email;
 }

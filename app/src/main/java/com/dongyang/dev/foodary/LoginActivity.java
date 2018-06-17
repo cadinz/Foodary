@@ -33,7 +33,6 @@ public class LoginActivity extends Activity {
     private TextView input_password;
     private Button btn_login;
     private TextView et_signin;
-    private Button nextView;
     private TextView find_password;
     private FirebaseDatabase database;
 
@@ -49,19 +48,7 @@ public class LoginActivity extends Activity {
         input_password = findViewById(R.id.input_password);
         btn_login = findViewById(R.id.btn_login);
         et_signin = findViewById(R.id.et_signin);
-        nextView = findViewById(R.id.nextview);
         find_password = findViewById(R.id.find_password);
-
-
-
-        nextView.setOnClickListener(new View.OnClickListener( ) {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),MyActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
 
         find_password.setOnClickListener(new View.OnClickListener( ) {

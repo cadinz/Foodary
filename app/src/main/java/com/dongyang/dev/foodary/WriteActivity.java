@@ -65,7 +65,7 @@ public class WriteActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),MyActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MyActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -142,7 +142,6 @@ public class WriteActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                dialog.dismiss();
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
@@ -154,9 +153,12 @@ public class WriteActivity extends AppCompatActivity {
                 imageDTO.uid = auth.getCurrentUser().getUid();
                 imageDTO.userId = auth.getCurrentUser().getEmail();
                 database.getReference().child("images").push().setValue(imageDTO);
+                dialog.dismiss();
+
                 Toast toast = Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_LONG); toast.show();
-                Intent intent = new Intent(WriteActivity.this,MyActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MyActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }
