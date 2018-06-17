@@ -17,12 +17,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SigninActivity extends Activity {
     private FirebaseAuth mAuth;
     private TextView input_email;
     private TextView input_password;
+    private TextView input_name;
     private Button btn_signin;
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +35,12 @@ public class SigninActivity extends Activity {
 
 
 
-
+        database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance( );
         input_email = findViewById(R.id.input_email);
         input_password = findViewById(R.id.input_password);
         btn_signin = findViewById(R.id.btn_signin);
-
+        input_name = findViewById(R.id.input_name);
         btn_signin.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick(View view) {
@@ -56,6 +59,11 @@ public class SigninActivity extends Activity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         dialog.dismiss();
                         if (task.isSuccessful()) {
+                            NameDTO dto = new NameDTO();
+                            dto.name = input_name.getText().toString();
+                            dto.email = mAuth.getCurrentUser().getEmail();
+                            database.getReference().child("name").push().setValue(dto);
+
                             new AlertDialog
                                     .Builder(SigninActivity.this)
                                     .setTitle("메세지")

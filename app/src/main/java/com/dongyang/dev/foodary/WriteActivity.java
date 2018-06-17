@@ -1,6 +1,7 @@
 package com.dongyang.dev.foodary;
 
 import android.*;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -67,6 +70,7 @@ public class WriteActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         //권한
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},0);
@@ -76,13 +80,13 @@ public class WriteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 upload(imagePath);
-                Intent intent = new Intent(WriteActivity.this,MyActivity.class);
-                startActivity(intent);
-                Toast toast = Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_LONG); toast.show();
+
+
 
 
             }
         });
+
         //겔러리 버튼 누르면
         bt_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +97,7 @@ public class WriteActivity extends AppCompatActivity {
             }
         });
     }
+
     public String getPath(Uri uri){
         String[] proj = {MediaStore.Images.Media.DATA};
         CursorLoader cursorLoader = new CursorLoader(this,uri,proj,null,null,null);
@@ -111,40 +116,47 @@ public class WriteActivity extends AppCompatActivity {
         if(requestCode==GALLERY_CODE){
 
             imagePath = getPath(data.getData());
-            File f = new File(getPath(data.getData()));    //경로넘어옴
+//            File f = new File(getPath(data.getData()));    //경로넘어옴
             //imageView.setImageURI(Uri.fromFile(f));
             String uri = imagePath.toString();
-           imguri.setText(uri);
+            String path = uri.substring(uri.lastIndexOf("/")+1);
+           imguri.setText(path);
 
         }
     }
     private void upload(String uri){
+        final ProgressDialog dialog = ProgressDialog.show(WriteActivity.this,"","업로드 중입니다..",true);
         StorageReference storageRef = storage.getReferenceFromUrl("gs://foodary-project.appspot.com");
 
         Uri file = Uri.fromFile(new File(uri));
         StorageReference riversRef = storageRef.child("images/"+file.getLastPathSegment());
         UploadTask uploadTask = riversRef.putFile(file);
-
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
+
             @Override
             public void onFailure(@NonNull Exception exception) {
+                dialog.dismiss();
                 // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                dialog.dismiss();
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                ImageDTO imageDTO = new ImageDTO();
+
+                    ImageDTO imageDTO = new ImageDTO();
                 imageDTO.imageUrl = downloadUrl.toString();
                 imageDTO.title = title.getText().toString();
                 imageDTO.content = content.getText().toString();
                 imageDTO.uid = auth.getCurrentUser().getUid();
                 imageDTO.userId = auth.getCurrentUser().getEmail();
-
                 database.getReference().child("images").push().setValue(imageDTO);
+                Toast toast = Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_LONG); toast.show();
+                Intent intent = new Intent(WriteActivity.this,MyActivity.class);
+                startActivity(intent);
             }
         });
     }

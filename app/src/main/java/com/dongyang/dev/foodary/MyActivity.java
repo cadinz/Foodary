@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,7 +32,7 @@ public class MyActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<MyData> myDataset;
+    private FirebaseAuth auth;
 
     private ImageButton imgBtnMenu;
     private ImageButton imgBtnWrite;
@@ -66,6 +67,7 @@ public class MyActivity extends AppCompatActivity {
         actionBar.setCustomView(actionbar);
         //액션바끝
 
+        auth = FirebaseAuth.getInstance();
 
         mRecyclerView = findViewById(R.id.my_recycler_view);
 
@@ -94,8 +96,7 @@ public class MyActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        database.getReference().child("images").addValueEventListener(new ValueEventListener() {
+        database.getReference().child("images").orderByChild("userId").equalTo(auth.getCurrentUser().getEmail()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {   //실시간으로 데이터새로고침
 
